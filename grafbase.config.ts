@@ -52,12 +52,19 @@ g.query('getProjects', {
     resolver: 'getProjects',
 })
 
-// Add this query to your Grafbase schema
+
 g.query('getProjectsByCreator', {
     args: { id: g.string() },
     returns: g.ref(Project).list().optional(),
     resolver: 'getProjectsByUser',
 });
+
+
+g.query('getProjectDetails', {
+    args: { id: g.string() },
+    returns: g.ref(Project).optional(),
+    resolver: 'getProjectDetails',
+})
 
 // Mutations
 g.mutation('createUser', {
@@ -95,7 +102,7 @@ g.mutation('updateProject', {
         githubUrl: g.string().optional(),
         category: g.string().optional(),
     },
-    returns: g.ref(Project),
+    returns: g.ref('Project'),
     resolver: 'updateProject',
 })
 

@@ -17,6 +17,17 @@ interface Project {
     githubUrl?: string;
 }
 
+interface ProjectInput {
+    id: string;
+    title: string;
+    category: string;
+    description: string;
+    image: string;
+    liveSiteUrl: string;
+    githubUrl?: string;
+}
+
+
 const UserProjectsPage = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);

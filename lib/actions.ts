@@ -260,10 +260,9 @@ export const getProjects = async (category?: string, first: number = 10, after?:
 };
 
 export const getProjectDetails = async (id: string) => {
-    // Since there's no specific query for a single project, we'll use getProjects with a filter
     const query = `
-    query GetProjectDetails($category: String, $first: Int!) {
-      getProjects(category: $category, first: $first) {
+    query GetProjectDetails($id: String!) {
+      getProjectDetails(id: $id) {
         id
         title
         description
@@ -282,9 +281,8 @@ export const getProjectDetails = async (id: string) => {
   `;
 
     try {
-        const result = await client.request<GetProjectDetailsResponse>(query, { first: 1 });
-        const projects = result.getProjects;
-        return projects.find(project => project.id === id) || null;
+        const result = await client.request<{ getProjectDetails: Project }>(query, { id });
+        return result.getProjectDetails;
     } catch (error) {
         console.error('Error fetching project details:', error);
         throw error;
@@ -334,11 +332,14 @@ export const editProject = async (project: Partial<ProjectInput> & { id: string 
   `;
 
     try {
-        const result = await client.request<UpdateProjectResponse>(mutation, project);
+        const result = await client.request<{ updateProject: Project }>(mutation, project);
         return result.updateProject;
     } catch (error) {
         console.error('Error updating project:', error);
-        throw error;
+        if (error.response?.errors) {
+            throw new Error(error.response.errors[0].message);
+        }
+        throw new Error('An error occurred while updating the project');
     }
 };
 

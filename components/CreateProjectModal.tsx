@@ -57,7 +57,6 @@ const CreateProjectModal: React.FC<{ onClose: () => void; creatorId: string }> =
         setError(null);
         setIsSubmitting(true);
 
-        // Basic validation
         if (formData.title.length < 3 || formData.title.length > 100) {
             setError('Title must be between 3 and 100 characters.');
             setIsSubmitting(false);
@@ -129,6 +128,12 @@ const CreateProjectModal: React.FC<{ onClose: () => void; creatorId: string }> =
                 className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
             >
                 <div className="bg-white rounded-lg p-8 max-w-md w-full">
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4"
+                    >
+                        <img src="/close.svg" alt="Close" className="w-6 h-6"/>
+                    </button>
                     <h2 className="text-2xl font-bold mb-6">Create New Project</h2>
                     {error && <p className="text-red-500 mb-4">{error}</p>}
                     {isSuccess ? (
