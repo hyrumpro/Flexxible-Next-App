@@ -5,7 +5,23 @@ import { useSearchParams } from 'next/navigation';
 import { getProjects } from "@/lib/actions";
 import ProjectCard from '@/components/ProjectCard';
 import ProjectDetailsModal from '@/components/ProjectDetailsModal';
-import { Project } from '@/types';
+
+interface Project {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    category: string;
+    liveSiteUrl: string | null;
+    githubUrl: string | null;
+    createdBy: {
+        name: string;
+        email: string;
+        avatarUrl: string;
+    };
+    likes?: number;
+    views?: number;
+}
 
 const PROJECTS_PER_PAGE = 9;
 

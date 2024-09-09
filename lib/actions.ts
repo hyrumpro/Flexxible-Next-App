@@ -89,33 +89,7 @@ interface CreateProjectResponse {
     };
 }
 
-interface GetProjectsResponse {
-    getProjects: {
-        pageInfo: {
-            hasNextPage: boolean;
-            hasPreviousPage: boolean;
-            startCursor: string;
-            endCursor: string;
-        };
-        edges: {
-            node: {
-                id: string;
-                title: string;
-                description?: string;
-                image: string;
-                liveSiteUrl: string;
-                githubUrl?: string;
-                category: string;
-                createdBy: {
-                    id: string;
-                    name: string;
-                    email: string;
-                    avatarUrl: string;
-                };
-            };
-        }[];
-    };
-}
+
 
 
 
@@ -135,23 +109,6 @@ interface CreateProjectResponse {
     };
 }
 
-interface GetProjectDetailsResponse {
-    getProjects: {
-        id: string;
-        title: string;
-        description?: string;
-        image: string;
-        liveSiteUrl: string;
-        githubUrl?: string;
-        category: string;
-        createdBy: {
-            id: string;
-            name: string;
-            email: string;
-            avatarUrl: string;
-        };
-    }[];
-}
 
 interface GetUserProjectsResponse {
     getProjectsByCreator: {
@@ -163,11 +120,6 @@ interface GetUserProjectsResponse {
         githubUrl?: string;
         category: string;
     }[];
-}
-
-
-interface UpdateProjectResponse {
-    updateProject: Project;
 }
 
 interface DeleteProjectResponse {
