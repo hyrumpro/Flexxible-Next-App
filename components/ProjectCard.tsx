@@ -1,4 +1,3 @@
-// components/ProjectCard.tsx
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,12 +11,13 @@ interface ProjectCardProps {
     liveSiteUrl: string | null;
     githubUrl: string | null;
     category: string;
-    createdBy: {
+    createdBy?: {
         name: string;
         avatarUrl: string;
     };
-    likes: number;
-    views: number;
+    likes?: number;
+    views?: number;
+    onClick: (id: string) => void
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -29,8 +29,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                                                      githubUrl,
                                                      category,
                                                      createdBy,
-                                                     likes,
-                                                     views,
+                                                     likes = 0,
+                                                     views = 0,
+                                                     onClick
                                                  }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
@@ -41,6 +42,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             whileHover={{ scale: 1.03 }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
+            onClick={() => onClick(id)}
         >
             <div className="relative h-64 w-full">
                 <Image src={image} alt={title} layout="fill" objectFit="cover" />
@@ -62,12 +64,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{description}</p>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
-                        <span className="ml-2 text-sm text-gray-700">{createdBy.name}</span>
+                        {createdBy && (
+                            <span className="ml-2 text-sm text-gray-700">{createdBy.name}</span>
+                        )}
                     </div>
                     <div className="flex items-center space-x-4">
                         <button
                             className="flex items-center space-x-1"
-                            onClick={() => setIsLiked(!isLiked)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsLiked(!isLiked);
+                            }}
                         >
                             <Image
                                 src={isLiked ? "/hearth-purple.svg" : "/hearth.svg"}
@@ -82,18 +89,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                             <span className="text-sm text-gray-600">{views}</span>
                         </div>
                     </div>
-                </div>
-                <div className="flex justify-between">
-                    {liveSiteUrl && (
-                        <Link href={liveSiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm font-medium">
-                            Live Site
-                        </Link>
-                    )}
-                    {githubUrl && (
-                        <Link href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:underline text-sm font-medium">
-                            GitHub
-                        </Link>
-                    )}
                 </div>
             </div>
         </motion.div>

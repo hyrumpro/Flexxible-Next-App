@@ -58,20 +58,25 @@ export default async function getProjects(_: any, args: GetProjectsArgs, context
 
         const result = await client.query(query, queryParams);
 
-        // Map the results to include createdBy details
         const projects = result.rows.map(project => ({
-            ...project,
-            id: project.id.toString(), // Ensure ID is a string
+            id: project.id.toString(),
+            title: project.title,
+            description: project.description || '',
+            image: project.image,
+            liveSiteUrl: project.live_site_url,
+            githubUrl: project.github_url,
+            category: project.category,
             createdBy: {
-                id: project.user_id ? project.user_id.toString() : null,
-                name: project.user_name,
-                email: project.user_email,
-                avatarUrl: project.user_avatarUrl || 'https://example.com/default-avatar.jpg', // Provide a default avatar URL if null
+                id: project.user_id ? project.user_id.toString() : '',
+                name: project.user_name || '',
+                email: project.user_email || '',
+                avatarUrl: project.user_avatarurl || 'https://example.com/default-avatar.jpg',
             },
         }));
 
         console.log('Projects fetched:', projects);
         return projects;
+
     } catch (error) {
         console.error('Error in getProjects resolver:', error);
         throw new GraphQLError('An error occurred while fetching the projects');

@@ -16,12 +16,31 @@ const client = new GraphQLClient(apiUrl, {
     },
 });
 
+
 // Define types for user and project inputs
 type UserInput = {
     name: string;
     email: string;
     avatarUrl: string;
 };
+
+
+
+type Project = {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    liveSiteUrl: string | null;
+    githubUrl: string | null;
+    category: string;
+    createdBy: {
+        id: string;
+        name: string;
+        email: string;
+        avatarUrl: string;
+    };
+}
 
 type ProjectInput = {
     title: string;
@@ -227,7 +246,7 @@ export const createProject = async (project: ProjectInput) => {
     }
 };
 
-export const getProjects = async (category?: string, first: number = 10, after?: string) => {
+export const getProjects = async (category?: string, first: number = 10, after?: string | null) => {
     const query = `
     query GetProjects($category: String, $first: Int!, $after: String) {
       getProjects(category: $category, first: $first, after: $after) {
@@ -248,17 +267,16 @@ export const getProjects = async (category?: string, first: number = 10, after?:
     }
   `;
 
-    const variables = { category, first, after };
+    const variables = { category, first, after: after || undefined };
 
     try {
-        const result = await client.request<GetProjectsResponse>(query, variables);
+        const result = await client.request<{ getProjects: Project[] }>(query, variables);
         return result.getProjects;
     } catch (error) {
         console.error('Error fetching projects:', error);
         throw error;
     }
 };
-
 export const getProjectDetails = async (id: string) => {
     const query = `
     query GetProjectDetails($id: String!) {
@@ -334,12 +352,18 @@ export const editProject = async (project: Partial<ProjectInput> & { id: string 
     try {
         const result = await client.request<{ updateProject: Project }>(mutation, project);
         return result.updateProject;
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error updating project:', error);
-        if (error.response?.errors) {
-            throw new Error(error.response.errors[0].message);
+        if (error instanceof Error) {
+            if ('response' in error && typeof error.response === 'object' && error.response !== null) {
+                const graphQLError = error.response as { errors?: { message: string }[] };
+                if (graphQLError.errors && graphQLError.errors.length > 0) {
+                    throw new Error(graphQLError.errors[0].message);
+                }
+            }
+            throw error;
         }
-        throw new Error('An error occurred while updating the project');
+        throw new Error('An unknown error occurred while updating the project');
     }
 };
 

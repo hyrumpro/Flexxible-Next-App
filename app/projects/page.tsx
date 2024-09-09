@@ -172,26 +172,6 @@ const UserProjectsPage = () => {
                                     <h2 className="text-xl font-semibold text-gray-800 mb-2">{project.title}</h2>
                                     <p className="text-sm text-blue-600 mb-4">{project.category}</p>
                                     <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
-                                    <div className="flex justify-between items-center">
-                                        <Link
-                                            href={project.liveSiteUrl || "https ://example.com"}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline font-medium transition-colors duration-300"
-                                        >
-                                            View Live
-                                        </Link>
-                                        {project.githubUrl && (
-                                            <Link
-                                                href={project.githubUrl || "https ://example.com"}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-gray-600 hover:underline transition-colors duration-300"
-                                            >
-                                                GitHub
-                                            </Link>
-                                        )}
-                                    </div>
                                 </div>
                             </motion.div>
                         ))}
