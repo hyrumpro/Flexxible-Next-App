@@ -17,11 +17,21 @@ const client = new GraphQLClient(apiUrl, {
 });
 
 
-// Define types for user and project inputs
+
 type UserInput = {
     name: string;
     email: string;
     avatarUrl: string;
+};
+
+type User = {
+    id: string;
+    name: string;
+    email: string;
+    description?: string;
+    githubUrl?: string;
+    linkedinUrl?: string;
+    avatarUrl?: string;
 };
 
 
@@ -52,18 +62,6 @@ type ProjectInput = {
     creatorId: string;
 };
 
-// Define types for GraphQL responses
-interface GetUserResponse {
-    getUser: {
-        id: string;
-        name: string;
-        email: string;
-        avatarUrl: string;
-        description?: string;
-        githubUrl?: string;
-        linkedinUrl?: string;
-    };
-}
 
 interface CreateUserResponse {
     createUser: {
@@ -137,11 +135,11 @@ const makeGraphQLRequest = async <T>(query: string, variables: Record<string, an
     }
 };
 
-// Fetch user by email
-export const getUser = async (email: string) => {
+
+export const getUser = async (id: string | number) => {
     const query = `
-    query GetUser($email: String!) {
-      getUser(email: $email) {
+    query GetUser($id: Int!) {
+      getUser(id: $id) {
         id
         name
         email
@@ -153,8 +151,14 @@ export const getUser = async (email: string) => {
     }
   `;
 
-    const result = await makeGraphQLRequest<GetUserResponse>(query, { email });
-    return result.getUser;
+    try {
+        const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+        const result = await makeGraphQLRequest<{ getUser: User }>(query, { id: numericId });
+        return result.getUser;
+    } catch (error) {
+        console.error('Error in getUser:', error);
+        throw new Error('Failed to fetch user data');
+    }
 };
 
 // Create a new user
@@ -172,6 +176,29 @@ export const createUser = async (user: UserInput) => {
 
     const result = await makeGraphQLRequest<CreateUserResponse>(mutation, user);
     return result.createUser;
+};
+
+
+
+
+
+export const updateUser = async (user: Partial<User>) => {
+    const mutation = `
+    mutation UpdateUser($id: ID!, $name: String, $description: String, $githubUrl: URL, $linkedinUrl: URL) {
+      updateUser(id: $id, name: $name, description: $description, githubUrl: $githubUrl, linkedinUrl: $linkedinUrl) {
+        id
+        name
+        email
+        avatarUrl
+        description
+        githubUrl
+        linkedinUrl
+      }
+    }
+  `;
+
+    const result = await makeGraphQLRequest<{ updateUser: User }>(mutation, user);
+    return result.updateUser;
 };
 
 export const createProject = async (project: ProjectInput) => {

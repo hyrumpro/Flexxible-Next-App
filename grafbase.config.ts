@@ -35,9 +35,22 @@ const User = g.type('User', {
 })
 
 
-// Queries
+g.mutation('updateUser', {
+    args: {
+        id: g.id(),
+        name: g.string().optional(),
+        description: g.string().optional(),
+        githubUrl: g.url().optional(),
+        linkedinUrl: g.url().optional(),
+    },
+    returns: g.ref(User),
+    resolver: 'updateUser',
+})
+
+
+
 g.query('getUser', {
-    args: { email: g.string() },
+    args: { id: g.int() },
     returns: g.ref(User).optional(),
     resolver: 'getUser',
 })

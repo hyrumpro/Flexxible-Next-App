@@ -7,33 +7,42 @@ type Context = {
 };
 
 type GetUserArgs = {
-    email: string;
+    id: number;
 };
 
 export default async function getUser(_: any, args: GetUserArgs, context: Context) {
+    const client = await pool.connect();
     try {
-        console.log('getUser resolver called with email:', args.email);
-        const { email } = args;
+        console.log('getUser resolver called with id:', args.id);
+        const { id } = args;
 
-        if (!email) {
-            throw new GraphQLError('No email provided');
+        if (!id || typeof id !== 'number') {
+            throw new GraphQLError('Invalid or missing user ID', {
+                extensions: { code: 'BAD_USER_INPUT' },
+            });
         }
 
-        const res = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const query = `
+            SELECT id, name, email, avatar_url, description, github_url, linkedin_url
+            FROM users
+            WHERE id = $1
+        `;
+        const res = await client.query(query, [id]);
+
         if (res.rows.length === 0) {
             console.log('User not found');
-            return null
+            return null;
         }
 
         const user = res.rows[0];
 
-        user.id = user.id.toString();
         const mappedUser = {
-            id: user.id,
+            id: user.id.toString(),
             name: user.name,
             email: user.email,
             avatarUrl: user.avatar_url,
             description: user.description,
+            githubUrl: user.github_url,
             linkedinUrl: user.linkedin_url,
         };
 
@@ -43,7 +52,11 @@ export default async function getUser(_: any, args: GetUserArgs, context: Contex
 
     } catch (error) {
         console.error('Error in getUser resolver:', error);
-        throw new GraphQLError('An error occurred while fetching the user');
+        throw new GraphQLError('An error occurred while fetching the user', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        });
+    } finally {
+        client.release();
     }
 }
 
