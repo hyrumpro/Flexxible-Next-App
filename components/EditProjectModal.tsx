@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { editProject } from '@/lib/actions';
+import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import CustomMenu from './CustomMenu';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +14,8 @@ interface ProjectInput {
     githubUrl?: string;
     category?: string;
 }
+
+type ProjectInputKey = keyof ProjectInput;
 
 const categories = ["Front-end", "Back-end", "UI/UX", "Mobile", "Full Stack", "Game Dev"];
 
@@ -44,11 +45,12 @@ const EditProjectModal: React.FC<{ project: ProjectInput; onClose: () => void }>
         setFormData(prev => ({ ...prev, category: value }));
     };
 
-    const hasChanges = () => {
-        return Object.keys(formData).some(key => formData[key] !== project[key]);
+    const hasChanges = (): boolean => {
+        return (Object.keys(formData) as Array<ProjectInputKey>).some(
+            key => formData[key] !== project[key]
+        );
     };
 
-    // components/EditProjectModal.tsx
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -81,14 +83,17 @@ const EditProjectModal: React.FC<{ project: ProjectInput; onClose: () => void }>
                 throw new Error(errorData.error || 'Failed to update project');
             }
 
-            const updatedProject = await response.json();
             setIsSuccess(true);
             setTimeout(() => {
                 onClose();
                 router.refresh();
             }, 3000);
-        } catch (error) {
-            setError(error.message || 'Failed to update project. Please try again.');
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('Failed to update project. Please try again.');
+            }
         } finally {
             setIsSubmitting(false);
         }
