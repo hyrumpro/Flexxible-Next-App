@@ -1,4 +1,3 @@
-// app/api/edit-project/route.ts
 import { NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { editProject, getProjectDetails } from '@/lib/actions';
@@ -27,9 +26,7 @@ export async function POST(request: Request) {
         const file = formData.get('file') as File | null;
         let newImageUrl = currentProject.image;
 
-        // If a new file is uploaded, delete the old image and upload the new one
         if (file) {
-            // Delete the old image from Cloudinary
             if (currentProject.image) {
                 const publicId = currentProject.image.split('/').pop()?.split('.')[0];
                 if (publicId) {
@@ -37,7 +34,6 @@ export async function POST(request: Request) {
                 }
             }
 
-            // Upload the new image
             const fileBuffer = await file.arrayBuffer();
             const base64Data = Buffer.from(fileBuffer).toString('base64');
             const fileUri = `data:${file.type};base64,${base64Data}`;

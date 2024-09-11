@@ -55,6 +55,12 @@ g.query('getUser', {
     resolver: 'getUser',
 })
 
+g.query('getUserByEmail', {
+    args: { email: g.string() },
+    returns: g.ref(User).optional(),
+    resolver: 'getUserByEmail',
+})
+
 g.query('getProjects', {
     args: {
         category: g.string().optional(),

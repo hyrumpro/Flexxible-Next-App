@@ -90,8 +90,6 @@ interface CreateProjectResponse {
 
 
 
-
-// Define types for GraphQL responses
 interface CreateProjectResponse {
     createProject: {
         id: string;
@@ -157,6 +155,31 @@ export const getUser = async (id: string | number) => {
         return result.getUser;
     } catch (error) {
         console.error('Error in getUser:', error);
+        throw new Error('Failed to fetch user data');
+    }
+};
+
+
+export const getUserByEmail = async (email: string) => {
+    const query = `
+    query GetUserByEmail($email: String!) {
+      getUserByEmail(email: $email) {
+        id
+        name
+        email
+        avatarUrl
+        description
+        githubUrl
+        linkedinUrl
+      }
+    }
+  `;
+
+    try {
+        const result = await makeGraphQLRequest<{ getUserByEmail: User }>(query, { email });
+        return result.getUserByEmail;
+    } catch (error) {
+        console.error('Error in getUserByEmail:', error);
         throw new Error('Failed to fetch user data');
     }
 };

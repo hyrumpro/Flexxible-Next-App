@@ -1,18 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, signIn, ClientSafeProvider } from "next-auth/react";
 
-type Provider = {
-    id: string;
-    name: string;
-    type: string;
-    signInUrl: string;
-    callbackUrl: string;
-    signinUrlParams?: Record<string, string> | null;
-};
-
-type Providers = Record<string, Provider>;
+type Providers = Record<string, ClientSafeProvider>;
 
 const AuthProviders: React.FC = () => {
     const [providers, setProviders] = useState<Providers | null>(null);
@@ -63,10 +54,10 @@ const AuthProviders: React.FC = () => {
                 Choose your preferred method to sign in and start exploring amazing projects!
             </p>
             <div className="flex flex-col w-full max-w-md gap-4 mt-4">
-                {Object.values(providers).map((provider: Provider) => (
+                {Object.values(providers).map((provider) => (
                     <button
                         key={provider.id}
-                        onClick={() => signIn(provider?.id)}
+                        onClick={() => signIn(provider.id)}
                         className="flexCenter gap-4 w-full px-6 py-4 text-base font-medium text-gray-700 transition-all duration-300 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                         <img

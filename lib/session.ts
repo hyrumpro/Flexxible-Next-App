@@ -2,7 +2,7 @@ import { getServerSession, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { SessionInterface, UserProfile } from "@/common.types";
-import { getUser, createUser } from "@/lib/actions";
+import { getUserByEmail, createUser } from "@/lib/actions";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user, account }) {
             if (account?.provider === "google") {
                 try {
-                    const existingUser = await getUser(user.email as string);
+                    const existingUser = await getUserByEmail(user.email as string);
 
                     if (!existingUser) {
                         const newUser = await createUser({
